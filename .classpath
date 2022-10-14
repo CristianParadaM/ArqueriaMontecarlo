@@ -6,5 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/src/lib/generacion.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/src/lib/pruebas.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
