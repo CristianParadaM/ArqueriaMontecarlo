@@ -7,7 +7,7 @@ public class Round {
 	private Player[] players;
 	private ArrayList<Double> archerys;
 	private double[] fortune;
-	private Object[][] table;
+	private ArrayList<Object[]> table;
 	private int positionSuperLuckyShot;
 	private int count;
 	
@@ -50,17 +50,19 @@ public class Round {
 	 * Metodo que genera la tabla con los resultados de esta ronda
 	 * @return tabla con resulatados de la ronda
 	 */
-	public Object[][] generateResultTable(){
-		Object[][] table = new Object[calculateMaxShots()][10];
+	public ArrayList<Object[]> generateResultTable(){
+		ArrayList<Object[]> table = new ArrayList<Object[]>(calculateMaxShots());
 		int count = 0;
-		for (int i = 0; i < table.length; i++) {
-			for (int j = 0; j < table[i].length; j++) {
+		for (int i = 0; i < table.size(); i++) {
+			Object[] aux = new Object[10];
+			for (int j = 0; j < aux.length; j++) {
 				if (calculateShots(j) > i) {
-					table[i][j] = calculateScore(archerys.get(count++), j);
+					aux[j] = calculateScore(archerys.get(count++), j);
 				}else {
-					table[i][j] = -1;
+					aux[j] = -1;
 				}
 			}
+			table.add(aux);
 		}
 		return table;
 	}
@@ -198,8 +200,8 @@ public class Round {
 		if (position == getLuckyPlayer()) {
 			aux = count == 2 && this.positionSuperLuckyShot == position?2:1;
 		}
-		for (int i = 0; i < table.length-aux; i++) {
-			count += (int)table[i][position];
+		for (int i = 0; i < table.size()-aux; i++) {
+			count += (int)table.get(i)[position];
 		}
 		return count;
 	}
@@ -227,34 +229,34 @@ public class Round {
 	 */
 	private int scoreTeam(int position) {
 		int score = 0;
-		for (int i = 0; i < table.length; i++) {
-			score += (int)table[i][position++]+(int)table[i][position++]+(int)table[i][position++]+(int)table[i][position++]+(int)table[i][position++];
+		for (int i = 0; i < table.size(); i++) {
+			score += (int)table.get(i)[position++]+(int)table.get(i)[position++]+(int)table.get(i)[position++]+(int)table.get(i)[position++]+(int)table.get(i)[position++];
 		}
 		return score;
 	}
 	
-	public static void main(String[] args) {
-		Player[] players = new Player[10];
-		players[0] = new Player(Gender.MALE, 45);
-		players[1] = new Player(Gender.FEMALE, 44);
-		players[2] = new Player(Gender.MALE, 45);
-		players[3] = new Player(Gender.FEMALE, 45);
-		players[4] = new Player(Gender.MALE, 45);
-		players[5] = new Player(Gender.FEMALE, 45);
-		players[6] = new Player(Gender.MALE, 45);
-		players[7] = new Player(Gender.FEMALE, 45);
-		players[8] = new Player(Gender.MALE, 45);
-		players[9] = new Player(Gender.FEMALE, 45);
-		ArrayList<Double> archerys = GenerateRi.getInstance().generateRi(4, 3, 7);
-		Round round = new Round(players, archerys, 0, 0);
-		Object[][] table = round.generateResultTable();
-		for (int i = 0; i < table.length; i++) {
-			for (int j = 0; j < table[i].length; j++) {
-				System.out.print(table[i][j]+"\t");
-			}
-			System.out.println();
-		}
-		
-		System.out.println(round.bestPlayer());
-	}
+//	public static void main(String[] args) {
+//		Player[] players = new Player[10];
+//		players[0] = new Player(Gender.MALE, 45);
+//		players[1] = new Player(Gender.FEMALE, 44);
+//		players[2] = new Player(Gender.MALE, 45);
+//		players[3] = new Player(Gender.FEMALE, 45);
+//		players[4] = new Player(Gender.MALE, 45);
+//		players[5] = new Player(Gender.FEMALE, 45);
+//		players[6] = new Player(Gender.MALE, 45);
+//		players[7] = new Player(Gender.FEMALE, 45);
+//		players[8] = new Player(Gender.MALE, 45);
+//		players[9] = new Player(Gender.FEMALE, 45);
+//		ArrayList<Double> archerys = GenerateRi.getInstance().generateRi(4, 3, 7);
+//		Round round = new Round(players, archerys, 0, 0);
+//		Object[][] table = round.generateResultTable();
+//		for (int i = 0; i < table.length; i++) {
+//			for (int j = 0; j < table[i].length; j++) {
+//				System.out.print(table[i][j]+"\t");
+//			}
+//			System.out.println();
+//		}
+//		
+//		System.out.println(round.bestPlayer());
+//	}
 }
