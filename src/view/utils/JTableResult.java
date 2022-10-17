@@ -29,12 +29,11 @@ public class JTableResult extends JScrollPane {
 	private ArrayList<Object[]> infoTable;
 	private String[] columnNames;
 	private int style;
+	private TableModel dataModel;
+	private DefaultTableCellRenderer cellRender;
 
 	/**
-	 * Constructor de JTableReports
-	 * 
-	 * @param info
-	 * @param type
+	 * Constructor de JTableResult
 	 */
 	public JTableResult(ArrayList<Object[]> info, String[] columnNames, int style) {
 		super();
@@ -47,16 +46,49 @@ public class JTableResult extends JScrollPane {
 	/**
 	 * Metodo que inicia esta tabla
 	 * 
-	 * @param type si es tabla de cajeros o de productos
 	 */
 	private void init() {
 		this.setOpaque(false);
 		this.getViewport().setOpaque(false);
 		this.getVerticalScrollBar().setOpaque(false);
 		this.getHorizontalScrollBar().setOpaque(false);
-		this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE));
+		this.setBorder(new LineBorder(Color.BLACK));
+		this.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
+		this.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+			@Override
+			protected void configureScrollBarColors() {
+				this.thumbColor = style == 0? new Color(91, 155, 213): new Color(255, 153, 153);
+			}
 
-		DefaultTableCellRenderer cellRender = new DefaultTableCellRenderer() {
+		});
+		createRenderCell();
+		createModel();
+		createTable();
+		this.setViewportView(jTable);
+	}
+
+	private void createTable() {
+		jTable = new JTable(dataModel);
+		jTable.getTableHeader().setFont(new Font(Constants.FONT_APP, Font.BOLD, 22 * JFrameMain.WIDTH_SCREEN / 1920));
+		jTable.getTableHeader().setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		jTable.getTableHeader().setPreferredSize(new Dimension(0, 40 * JFrameMain.HEIGHT_SCREEN / 1080));
+		jTable.getTableHeader().setBackground(style == 0? new Color(91, 155, 213) : new Color(255, 153, 153));
+		jTable.getTableHeader().setForeground(Color.WHITE);
+		jTable.getTableHeader().setReorderingAllowed(false);
+		jTable.getTableHeader().setResizingAllowed(false);
+
+		for (int i = 0; i < columnNames.length; i++) {
+			TableColumn tableColumn = jTable.getColumn(columnNames[i]);
+			tableColumn.setCellRenderer(cellRender);
+
+		}
+		
+		jTable.setShowGrid(false);
+		jTable.setRowHeight(42 * JFrameMain.HEIGHT_SCREEN / 1080);
+	}
+
+	private void createRenderCell() {
+		cellRender = new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -81,8 +113,10 @@ public class JTableResult extends JScrollPane {
 			}
 		};
 		cellRender.setHorizontalAlignment(JLabel.CENTER);
+	}
 
-		TableModel dataModel = new AbstractTableModel() {
+	private void createModel() {
+		dataModel = new AbstractTableModel() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -120,33 +154,13 @@ public class JTableResult extends JScrollPane {
 				infoTable.get(row)[column] = aValue;
 			}
 		};
-		this.setBorder(BorderFactory.createEmptyBorder());
-		jTable = new JTable(dataModel);
-		jTable.getTableHeader().setFont(new Font(Constants.FONT_APP, Font.BOLD, 22 * JFrameMain.WIDTH_SCREEN / 1920));
-		jTable.getTableHeader().setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		jTable.getTableHeader().setPreferredSize(new Dimension(0, 40 * JFrameMain.HEIGHT_SCREEN / 1080));
-		jTable.getTableHeader().setBackground(style == 0? new Color(91, 155, 213) : new Color(255, 153, 153));
-		jTable.getTableHeader().setForeground(Color.WHITE);
-		jTable.getTableHeader().setReorderingAllowed(false);
-		jTable.getTableHeader().setResizingAllowed(false);
-
-		for (int i = 0; i < columnNames.length; i++) {
-			TableColumn tableColumn = jTable.getColumn(columnNames[i]);
-			tableColumn.setCellRenderer(cellRender);
-
-		}
-		jTable.setShowGrid(false);
-		jTable.setRowHeight(42 * JFrameMain.HEIGHT_SCREEN / 1080);
-		this.setBorder(new LineBorder(Color.BLACK));
-		this.getVerticalScrollBar().setPreferredSize(new Dimension(10, 0));
-		this.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-			@Override
-			protected void configureScrollBarColors() {
-				this.thumbColor = style == 0? new Color(91, 155, 213): new Color(255, 153, 153);
-			}
-
-		});
+	}
+	
+	public void setInfoTable(ArrayList<Object[]> infoTable, String[] columNames) {
+		this.infoTable = infoTable;
+		this.columnNames = columNames;
+		createTable();
 		this.setViewportView(jTable);
 	}
-
+	
 }

@@ -16,66 +16,58 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.LineBorder;
-
 import view.JFrameMain;
 import view.utils.Constants;
 
 public class JPanelContent extends JPanel {
-	
-	private ArrayList<JPanelGames> listGamesPanels;
+
+	private JPanelGame jPanelGame;
 	private JPanel jPanelContainerGame;
 	private int indexPage;
 	private JButton buttonBack;
 	private JButton buttonNext;
 	private JTextField jTextFieldIndex;
 	private JLabel jLabelIndexes;
-	
+	private Object[] gamesData;
+
 	private GridBagConstraints gbc;
-	
-	public JPanelContent() {
+
+	public JPanelContent(Object[] gamesData, ImageIcon[] images) {
 		super(new GridBagLayout());
-		this.indexPage = 1;
-		this.listGamesPanels = new ArrayList<JPanelGames>();
-		test();
+		this.gamesData = gamesData;
+		this.indexPage = 0;
+		this.jPanelGame = new JPanelGame((Object[])gamesData[0], images);
 		this.buttonBack = new JButton(new ImageIcon(getClass().getResource("/res/arrowleft.png")));
 		this.buttonNext = new JButton(new ImageIcon(getClass().getResource("/res/arrowright.png")));
-		this.jTextFieldIndex = new JTextField(indexPage+" ");
-		this.jLabelIndexes = new JLabel("/ "+listGamesPanels.size());
+		this.jTextFieldIndex = new JTextField((indexPage + 1) + " ");
+		this.jLabelIndexes = new JLabel("/ " + (gamesData.length - 1));
 		this.jPanelContainerGame = new JPanel(new GridLayout());
 		this.gbc = new GridBagConstraints();
 		init();
 	}
 
-	private void test() {
-		for (int i = 0; i < 10; i++) {
-			this.listGamesPanels.add(new JPanelGames());
-		}
-	}
-
 	private void init() {
 		this.setOpaque(false);
 		this.jPanelContainerGame.setOpaque(false);
-		configureButtons(buttonBack,false);
-		configureButtons(buttonNext,true);
+		configureButtons(buttonBack, false);
+		configureButtons(buttonNext, true);
 		configureLabel(jLabelIndexes, Constants.FONT_APP, 30, Font.ITALIC);
 		configureField(jTextFieldIndex, Constants.FONT_APP, 30, Font.ITALIC);
 		addComponents();
 		changePanel();
 	}
-	
+
 	private void changePanel() {
 		removeComponents(jPanelContainerGame);
-		listGamesPanels.get(indexPage-1).setVisible(true);
-		this.jPanelContainerGame.add(listGamesPanels.get(indexPage-1));
+		jPanelGame.setVisible(true);
+		jPanelGame.setGameData((Object[]) gamesData[indexPage]);
+		this.jPanelContainerGame.add(jPanelGame);
 	}
 
 	private void removeComponents(Container container) {
@@ -90,31 +82,32 @@ public class JPanelContent extends JPanel {
 		jTextField.setForeground(Color.WHITE);
 		jTextField.setBorder(BorderFactory.createEmptyBorder());
 		jTextField.setOpaque(false);
-		jTextField.setPreferredSize(new Dimension(80,30));
+		jTextField.setPreferredSize(new Dimension(80, 30));
 		jTextField.setHorizontalAlignment(JTextField.RIGHT);
 		jTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				String text = jTextField.getText();
-				if ((int)e.getKeyChar() == 8 && text.length() >= 1) {
+				if ((int) e.getKeyChar() == 8 && text.length() >= 1) {
 					if (text.length() != 1) {
-						jTextField.setText(jTextField.getText().substring(0,jTextField.getText().length()-1)+" ");
+						jTextField.setText(jTextField.getText().substring(0, jTextField.getText().length() - 1) + " ");
 						indexPage = Integer.parseInt(jTextField.getText().replace(" ", ""));
 						changePanel();
-					}else {
+					} else {
 						jTextField.setText("1 ");
-						indexPage = 1;
+						indexPage = 0;
 						changePanel();
 					}
 				}
-				if (Character.isDigit((int)e.getKeyChar())) {
-					if (Integer.parseInt(jTextField.getText().replace(" ", "")+e.getKeyChar())<=listGamesPanels.size()) {
-						jTextField.setText(jTextField.getText().replace(" ", "")+e.getKeyChar()+" ");
+				if (Character.isDigit((int) e.getKeyChar())) {
+					if (Integer.parseInt(jTextField.getText().replace(" ", "") + e.getKeyChar()) <= gamesData.length
+							- 1) {
+						jTextField.setText(jTextField.getText().replace(" ", "") + e.getKeyChar() + " ");
 						indexPage = Integer.parseInt(jTextField.getText().replace(" ", ""));
 						changePanel();
 					}
 					e.consume();
-				}else {
+				} else {
 					e.consume();
 				}
 			}
@@ -124,7 +117,7 @@ public class JPanelContent extends JPanel {
 	private void configureLabel(JLabel jLabel, String font, int size, int style) {
 		jLabel.setFont(new Font(font, style, size));
 		jLabel.setForeground(Color.WHITE);
-		jLabel.setPreferredSize(new Dimension(90,30));
+		jLabel.setPreferredSize(new Dimension(90, 30));
 	}
 
 	private void configureButtons(JButton button, boolean b) {
@@ -133,22 +126,22 @@ public class JPanelContent extends JPanel {
 		button.setFocusPainted(false);
 		if (b) {
 			button.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (indexPage<listGamesPanels.size()) {
-						jTextFieldIndex.setText(++indexPage+" ");
+					if (indexPage < gamesData.length-2) {
+						jTextFieldIndex.setText(((++indexPage) + 1) + " ");
 						changePanel();
 					}
 				}
 			});
-		}else {
+		} else {
 			button.addActionListener(new ActionListener() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (indexPage != 1) {
-						jTextFieldIndex.setText(--indexPage+" ");
+					if (indexPage != 0) {
+						jTextFieldIndex.setText(((--indexPage) + 1) + " ");
 						changePanel();
 					}
 				}
@@ -181,7 +174,7 @@ public class JPanelContent extends JPanel {
 		gbc.insets.right = 55;
 		this.add(buttonNext, gbc);
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -197,7 +190,8 @@ public class JPanelContent extends JPanel {
 				getWidth() - (110 * JFrameMain.HEIGHT_SCREEN / 1080),
 				getHeight() - (155 * JFrameMain.HEIGHT_SCREEN / 1080), 45 * JFrameMain.WIDTH_SCREEN / 1920,
 				45 * JFrameMain.WIDTH_SCREEN / 1920);
-		g2d.drawLine(getWidth()/2, 50, getWidth()/2, getHeight() - 110);
+		g2d.drawLine(getWidth() / 2, 50 * JFrameMain.HEIGHT_SCREEN / 1080, getWidth() / 2,
+				getHeight() - (110 * JFrameMain.HEIGHT_SCREEN / 1080));
 		super.paint(g);
 	}
 }

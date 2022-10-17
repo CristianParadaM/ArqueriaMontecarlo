@@ -14,34 +14,32 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.DefaultXYDataset;
-
-import controller.Controller;
+import org.jfree.data.category.DefaultCategoryDataset;
 import view.utils.Constants;
 import view.utils.JTableResult;
 
+@SuppressWarnings("unchecked")
 public class JPanelResult extends JPanel {
 
 	private JLabel jLabelTitle;
+	private JLabel jLabelTitle2;
 	private GridBagConstraints gbc;
 
 	private JPanel jPanelContentLeft;
 	private JLabel jLabelWinner;
 	private JLabel jLabelPoints;
 	private JTableResult jTableResult;
+	private JTableResult jTableInitial;
 
 	private JPanel jPanelContentRight;
 	private JLabel jLabelGraph;
@@ -49,17 +47,21 @@ public class JPanelResult extends JPanel {
 	private JButton jButtonBack;
 	private JButton jButtonSeeGames;
 
-	double[][] positions = new double[][] { { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } };
+	private double[] points;
 
-	public JPanelResult() {
+	
+	public JPanelResult(Object[] data) {
 		super(new GridBagLayout());
-		String winner = "Equipo 2";
-		String points = "212 pts.";
-		ArrayList<Object[]> results = new ArrayList<Object[]>();
-		test(results);
-		String[] columnNames = new String[] { "Ronda", "Jugador con más suerte", "Jugador con más experiencia",
+		String winner = "Equipo "+data[0];
+		String points = data[1]+" pts.";
+		ArrayList<Object[]> results = (ArrayList<Object[]>) data[3];
+		ArrayList<Object[]> initial = (ArrayList<Object[]>) data[4];
+		String[] columnNames = new String[] { "Juego", "Jugador con más suerte", "Jugador con más experiencia",
 				"Género con más victorias" };
+		String[] columnNames2 = new String[] { "Jugador", "Resistencia", "Género" };
 
+		this.points = (double[]) data[2]; 
+		this.jLabelTitle2 = new JLabel("<html><b>" + Constants.TITLE_RESULT2 + "</b></html>", JLabel.CENTER);
 		this.jLabelTitle = new JLabel("<html><b>" + Constants.TITLE_RESULT + "</b></html>", JLabel.CENTER);
 		this.gbc = new GridBagConstraints();
 		this.jPanelContentLeft = new JPanel(new GridBagLayout());
@@ -71,6 +73,7 @@ public class JPanelResult extends JPanel {
 				"<html><p style='text-align:center;'><b>" + Constants.SCORE + "</b>" + points + "</p></html>",
 				JLabel.CENTER);
 		this.jTableResult = new JTableResult(results, columnNames, 0);
+		this.jTableInitial = new JTableResult(initial, columnNames2, 1);
 		this.jLabelGraph = new JLabel();
 		this.jLabelDescGraph = new JLabel(Constants.DESC_GRAPH, JLabel.CENTER);
 		this.jButtonBack = new JButton(Constants.BTNBACK);
@@ -78,18 +81,13 @@ public class JPanelResult extends JPanel {
 		init();
 	}
 
-	private void test(ArrayList<Object[]> results) {
-		for (int i = 0; i < 20000; i++) {
-			results.add(new Object[] { i + 1, "P" + (Math.random() > 0.5 ? "1" : "2"), "P1",
-					Math.random() > 0.5 ? "Femenino" : "Masculino" });
-		}
-	}
-
 	private void init() {
 		this.setOpaque(false);
 		this.jPanelContentLeft.setOpaque(false);
 		this.jPanelContentRight.setOpaque(false);
-		configureLabel(jLabelTitle, Constants.FONT_APP, 80 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, true);
+
+		configureLabel(jLabelTitle, Constants.FONT_APP, 60 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, true);
+		configureLabel(jLabelTitle2, Constants.FONT_APP, 60 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, true);
 		configureLabel(jLabelWinner, Constants.FONT_APP, 40 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, false);
 		configureLabel(jLabelPoints, Constants.FONT_APP, 40 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, false);
 		configureLabel(jLabelDescGraph, Constants.FONT_APP, 30 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, false);
@@ -119,7 +117,7 @@ public class JPanelResult extends JPanel {
 		if (p) {
 			jButton.setBackground(new Color(91, 155, 213));
 			jButton.setBorder(new LineBorder(new Color(65, 113, 156)));
-			jButton.addActionListener(Controller.getInstance());
+			jButton.addActionListener(JFrameMain.getInstance());
 			jButton.setActionCommand("juegos");
 		} else {
 			jButton.setBackground(new Color(255, 153, 153));
@@ -134,11 +132,14 @@ public class JPanelResult extends JPanel {
 		gbc.fill = 1;
 		gbc.insets.top = 55 * JFrameMain.HEIGHT_SCREEN / 1080;
 		gbc.insets.left = 100 * JFrameMain.WIDTH_SCREEN / 1920;
-		gbc.insets.right = 100 * JFrameMain.WIDTH_SCREEN / 1920;
-		gbc.gridwidth = 2;
 		this.add(jLabelTitle, gbc);
+		gbc.insets.left = 0;
+		gbc.insets.right = 100 * JFrameMain.WIDTH_SCREEN / 1920;
+		gbc.gridx = 1;
+		this.add(jLabelTitle2, gbc);
+		gbc.insets.left = 100 * JFrameMain.WIDTH_SCREEN / 1920;
+		gbc.gridx = 0;
 		gbc.insets.top = 20 * JFrameMain.HEIGHT_SCREEN / 1080;
-		gbc.gridwidth = 1;
 		gbc.gridy = 1;
 		gbc.weighty = 1;
 		gbc.insets.right = 10 * JFrameMain.WIDTH_SCREEN / 1920;
@@ -154,44 +155,47 @@ public class JPanelResult extends JPanel {
 
 	private void addComponentsRight() {
 		this.jPanelContentRight.setPreferredSize(new Dimension(500, 0));
+		this.jTableInitial.setPreferredSize(new Dimension(500, 300));
+
 		gbc = new GridBagConstraints();
 		gbc.weightx = 1;
 		gbc.fill = 1;
-		gbc.insets.top = 50 * JFrameMain.HEIGHT_SCREEN / 1080;
 		gbc.gridwidth = 2;
-		generateGraph(positions);
-		this.jPanelContentRight.add(jLabelGraph, gbc);
-		gbc.insets.top = 5 * JFrameMain.HEIGHT_SCREEN / 1080;
+		this.jPanelContentRight.add(jTableInitial, gbc);
+		gbc.insets.top = 30 * JFrameMain.HEIGHT_SCREEN / 1080;
 		gbc.gridy = 1;
+		generateGraph(points);
+		this.jPanelContentRight.add(jLabelGraph, gbc);
+		gbc.insets.top = 0;
+		gbc.gridy = 2;
 		this.jPanelContentRight.add(jLabelDescGraph, gbc);
-		gbc.insets.top = 50 * JFrameMain.HEIGHT_SCREEN / 1080;
+		gbc.insets.top = 40 * JFrameMain.HEIGHT_SCREEN / 1080;
 		gbc.insets.left = 100 * JFrameMain.WIDTH_SCREEN / 1920;
 		gbc.insets.right = 50 * JFrameMain.WIDTH_SCREEN / 1920;
-		gbc.gridy = 2;
+		gbc.gridy = 3;
 		gbc.gridwidth = 1;
 		this.jPanelContentRight.add(jButtonBack, gbc);
 		gbc.insets.right = 100 * JFrameMain.WIDTH_SCREEN / 1920;
 		gbc.insets.left = 50 * JFrameMain.WIDTH_SCREEN / 1920;
 		gbc.gridx = 1;
 		this.jPanelContentRight.add(jButtonSeeGames, gbc);
-		gbc.gridy = 3;
-		gbc.weighty = 1;
-		this.jPanelContentRight.add(Box.createRigidArea(new Dimension(0, 0)), gbc);
 	}
 
 	private void addComponentsLeft() {
 		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridwidth = 2;
+		gbc.weighty = 1;
 		gbc.weightx = 1;
 		gbc.fill = 1;
+		this.jPanelContentLeft.add(jTableResult, gbc);
+		gbc.insets.top = 5 * JFrameMain.HEIGHT_SCREEN / 1080;
+		gbc.weighty = 0;
+		gbc.gridy = 1;
+		gbc.gridwidth = 1;
 		this.jPanelContentLeft.add(jLabelWinner, gbc);
 		gbc.gridx = 1;
 		this.jPanelContentLeft.add(jLabelPoints, gbc);
-		gbc.insets.top = 5 * JFrameMain.HEIGHT_SCREEN / 1080;
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.gridwidth = 2;
-		gbc.weighty = 1;
-		this.jPanelContentLeft.add(jTableResult, gbc);
 	}
 
 	private void configureLabel(JLabel jLabel, String font, int size, int style, boolean b) {
@@ -202,23 +206,25 @@ public class JPanelResult extends JPanel {
 		}
 	}
 
-	private void generateGraph(double[][] positions) {
-		DefaultXYDataset dataset = new DefaultXYDataset();
-		fillDataSet(dataset, positions);
-		JFreeChart jFreeChartxy = ChartFactory.createXYLineChart("", "", "", dataset, PlotOrientation.VERTICAL, true,
-				false, false);
-		jFreeChartxy.removeLegend();
-		XYPlot plot = jFreeChartxy.getXYPlot();
+	private void generateGraph(double[] points) {
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		fillDataSet(dataset, points);
+		JFreeChart jFreeChartBar = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.VERTICAL, false,
+				false, true);
+		jFreeChartBar.removeLegend();
+		CategoryPlot plot = jFreeChartBar.getCategoryPlot();
 		plot.setBackgroundPaint(Color.WHITE);
 		plot.setRangeGridlinePaint(Color.BLACK);
 		plot.setOutlineVisible(false);
-		BufferedImage img = jFreeChartxy.createBufferedImage(800 * JFrameMain.WIDTH_SCREEN / 1920,
-				500 * JFrameMain.HEIGHT_SCREEN / 1080);
+		BufferedImage img = jFreeChartBar.createBufferedImage(800 * JFrameMain.WIDTH_SCREEN / 1920,
+				370 * JFrameMain.HEIGHT_SCREEN / 1080);
 		this.jLabelGraph = new JLabel(new ImageIcon(img));
 	}
 
-	private void fillDataSet(DefaultXYDataset dataset, double[][] positions) {
-		dataset.addSeries("", positions);
+	private void fillDataSet(DefaultCategoryDataset dataset, double[] points) {
+		for (int i = 0; i < points.length; i++) {
+			dataset.setValue(points[i], "", Double.valueOf(i+1));
+		}
 	}
 
 	@Override

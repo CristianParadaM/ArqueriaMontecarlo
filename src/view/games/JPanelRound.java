@@ -12,81 +12,104 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import view.JFrameMain;
 import view.utils.Constants;
 import view.utils.JTableResult;
 
+@SuppressWarnings("unchecked")
 public class JPanelRound extends JPanel {
-	
+
 	private GridBagConstraints gbc;
 	private JLabel jLabelTeam;
 	private JTableResult jTableResult;
-	private JLabel jLabelPlayerXP;
 	private JLabel jLabelPointsRound;
-	
-	public JPanelRound(int i) {
+	private String[] columnNames;
+
+	// data[0] = Arraylist<Object[]> infotable
+	// data[1] = int points Round
+	// data[6] = double[] suerte
+	public JPanelRound(int i, Object[] data) {
 		super(new GridBagLayout());
-		this.gbc = new GridBagConstraints();
-		ArrayList<Object[]> aux = new ArrayList<Object[]>();
-		aux.add(new Object[] {1,10,9,8,9,10,9});
-		aux.add(new Object[] {2,10,9,8,9,10,9});
-		aux.add(new Object[] {3,10,9,8,9,10,9});
-		aux.add(new Object[] {4,10,9,8,9,10,9});
-		aux.add(new Object[] {5,10,9,8,9,10,9});
-		aux.add(new Object[] {6,10,9,8,9,10,9});
-		aux.add(new Object[] {7,10,9,8,9,10,9});
-		aux.add(new Object[] {8,10,9,8,9,10,9});
-		aux.add(new Object[] {9,10,9,8,9,10,9});
-		aux.add(new Object[] {10,"-",9,"-",9,10,9});
-		aux.add(new Object[] {11,"-","-","-","-","-","-"});
-		String[] columnNames = new String[] {"Lanz.", "P1","P2","P3","P4","P5"};
-		String[] columnNames2 = new String[] {"Lanz.", "P6","P7","P8","P9","P10"};
-		this.jTableResult = new JTableResult(aux, i == 0? columnNames:columnNames2, i);
-		this.jLabelTeam = new JLabel("<html><b>Equipo "+(i+1)+"</b><html>", JLabel.CENTER);
-		this.jLabelPlayerXP = new JLabel("<html><b>Jugador con más Exp</b>: P"+(i+1)+"</html>", JLabel.CENTER);
-		this.jLabelPointsRound = new JLabel("<html><b>Puntos de la Ronda:</b> "+65+"</html>", JLabel.CENTER);
+		columnNames = i == 0
+				? new String[] { "Lanz.", "P1 - " + (((double[]) data[2])[0]), "P2 - " + (((double[]) data[2])[1]),
+						"P3 - " + (((double[]) data[2])[2]), "P4 - " + (((double[]) data[2])[3]),
+						"P5 - " + (((double[]) data[2])[4]) }
+				: new String[] { "Lanz.", "P6 - " + (((double[]) data[2])[5]), "P7 - " + (((double[]) data[2])[6]),
+						"P8 - " + (((double[]) data[2])[7]), "P9 - " + (((double[]) data[2])[8]),
+						"P10 - " + (((double[]) data[2])[9]) };
+		this.jTableResult = new JTableResult((ArrayList<Object[]>) data[0], columnNames, i);
+		this.jLabelTeam = new JLabel("<html><b>Equipo " + (i + 1) + "</b><html>", JLabel.CENTER);
+		this.jLabelPointsRound = new JLabel("<html><b>Puntos de la Ronda:</b> " + ((int) data[1]) + "</html>",
+				JLabel.CENTER);
 		init();
 	}
-	
-	private void init() {
-		this.setOpaque(false);
-		this.jTableResult.setPreferredSize(new Dimension(0,500));
-		configureLabel(jLabelTeam, Constants.FONT_APP, 60, Font.ITALIC, Color.BLACK);
-		configureLabel(jLabelPlayerXP, Constants.FONT_APP, 50, Font.ITALIC, Color.BLACK);
-		configureLabel(jLabelPointsRound, Constants.FONT_APP, 50, Font.ITALIC, Color.BLACK);
+
+	public void setData(int i, Object[] data) {
+		columnNames = i == 0
+				? new String[] { "Lanz.", "P1 - " + (((double[]) data[2])[0]), "P2 - " + (((double[]) data[2])[1]),
+						"P3 - " + (((double[]) data[2])[2]), "P4 - " + (((double[]) data[2])[3]),
+						"P5 - " + (((double[]) data[2])[4]) }
+				: new String[] { "Lanz.", "P6 - " + (((double[]) data[2])[5]), "P7 - " + (((double[]) data[2])[6]),
+						"P8 - " + (((double[]) data[2])[7]), "P9 - " + (((double[]) data[2])[8]),
+						"P10 - " + (((double[]) data[2])[9]) };
+		this.jTableResult.setInfoTable((ArrayList<Object[]>) data[0], columnNames);
+		this.jLabelTeam.setText("<html><b>Equipo " + (i + 1) + "</b><html>");
+		this.jLabelPointsRound.setText("<html><b>Puntos de la Ronda:</b> " + ((int) data[1]) + "</html>");
+		removeComponents();
 		addComponents();
 	}
-	
+
+	private void removeComponents() {
+		for (int i = 0; i < this.getComponentCount(); i++) {
+			this.getComponent(i).setVisible(false);
+		}
+		this.removeAll();
+	}
+
+	private void init() {
+		this.setOpaque(false);
+		this.jTableResult.setPreferredSize(new Dimension(0, 500 * JFrameMain.HEIGHT_SCREEN / 1080));
+		configureLabel(jLabelTeam, Constants.FONT_APP, 60 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, Color.BLACK);
+		configureLabel(jLabelPointsRound, Constants.FONT_APP, 50 * JFrameMain.WIDTH_SCREEN / 1920, Font.ITALIC, Color.BLACK);
+		addComponents();
+	}
+
 	private void configureLabel(JLabel jLabel, String font, int size, int style, Color color) {
 		jLabel.setFont(new Font(font, style, size));
 		jLabel.setForeground(color);
 	}
 
 	private void addComponents() {
+		jLabelTeam.setVisible(true);
+		jTableResult.setVisible(true);
+		jLabelPointsRound.setVisible(true);
+
+		gbc = new GridBagConstraints();
 		gbc.weightx = 1;
 		gbc.fill = 1;
-		gbc.insets.left = 120;
-		gbc.insets.right = 120;
-		gbc.insets.top = 10;
+		gbc.insets.left = 120 * JFrameMain.WIDTH_SCREEN / 1920;
+		gbc.insets.right = 120 * JFrameMain.WIDTH_SCREEN / 1920;
+		gbc.insets.top = 10 * JFrameMain.HEIGHT_SCREEN / 1080;
+		gbc.gridy = 0;
 		this.add(jLabelTeam, gbc);
 		gbc.fill = 1;
-		gbc.gridy =1;
-		gbc.insets.top = 50;
+		gbc.gridy = 1;
+		gbc.insets.top = 50 * JFrameMain.HEIGHT_SCREEN / 1080;
 		this.add(jTableResult, gbc);
-		gbc.insets.top = 10;
-		gbc.gridy =2;
-		this.add(jLabelPlayerXP, gbc);
-		gbc.gridy =3;
+		gbc.insets.top = 50 * JFrameMain.HEIGHT_SCREEN / 1080;
+		gbc.gridy = 2;
 		this.add(jLabelPointsRound, gbc);
-		gbc.weighty =1;
-		gbc.gridy =4;
-		this.add(Box.createRigidArea(new Dimension(0,0)), gbc);
+		gbc.gridy = 3;
+		gbc.weighty = 1;
+		this.add(Box.createRigidArea(new Dimension(0, 0)), gbc);
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		g.setColor(Color.BLACK);
-		g.drawLine(100, 92, getWidth()-100, 92);
+		g.drawLine(100 * JFrameMain.WIDTH_SCREEN / 1920, 92 * JFrameMain.HEIGHT_SCREEN / 1080,
+				getWidth() - (100 * JFrameMain.WIDTH_SCREEN / 1920), 92 * JFrameMain.HEIGHT_SCREEN / 1080);
 		super.paint(g);
 	}
-	
+
 }

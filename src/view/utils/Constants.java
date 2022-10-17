@@ -8,6 +8,7 @@ public class Constants {
 	public static final String SCORE = "Puntaje Total: ";
 	public static final String BTNBACK = "Atras";
 	public static final String BTNSEEGAMES = "Ver Juegos";
-	public static final String DESC_GRAPH = "<html><b>Gráfica 1.</b> Pts obtenidos por cada uno de los jugadores vs juego</html>";
+	public static final String DESC_GRAPH = "<html><b>Gráfica 1.</b> Pts obtenidos por cada uno de los jugadores en todos de los juegos</html>";
+	public static final String TITLE_RESULT2 = "Propiedades Iniciales";
 
 }
