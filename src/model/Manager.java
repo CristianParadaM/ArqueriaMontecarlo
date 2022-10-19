@@ -32,6 +32,7 @@ public class Manager {
 			int k = Integer.parseInt((games[i-1].getNextK()+"").substring(2, 4));
 			int c = Integer.parseInt((games[i-1].getNextC()+"").substring(2, 4));
 			games[i] = new ArcheryGame(players, k%2==0?k:k+1, c%2!=0?c:c+1);
+			System.out.println(i);
 		}
 		return games;
 	}
