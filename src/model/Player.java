@@ -9,7 +9,7 @@ public class Player {
 	public Player(Gender gender, int resistance) {
 		this.gender = gender;
 		this.resistance = resistance;
-		this.experience = 10;
+		this.experience = 0;
 		this.fortune = 0;
 		this.experienceRounds = 0;
 	}

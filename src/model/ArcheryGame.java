@@ -6,18 +6,14 @@ import java.util.List;
 public class ArcheryGame {
 	private Player[] players;
 	private Round[] rounds;
-	private ArrayList<Double> archerys;
-	private int amountArcherys;
 	private int k;
 	private int c;
 	
-	public ArcheryGame(Player[] players, int amountArcherys, int k, int c) {
-		this.players = players;
-		this.archerys = generateArcherys();
-		this.rounds = generateRounds();
-		this.amountArcherys = amountArcherys;
+	public ArcheryGame(Player[] players, int k, int c) {
 		this.k = k;
 		this.c = c;
+		this.players = players;
+		this.rounds = generateRounds();
 	}
 	
 	/**
@@ -28,9 +24,11 @@ public class ArcheryGame {
 		Round[] aux = new Round[10];
 		int count = 0;
 		int position = -1;
-		for (int i = 0; i < aux.length; i++) {
-			ArrayList<Double> list = (ArrayList<Double>) archerys.subList(i*(amountArcherys+2), (i+1)*(amountArcherys+2));
-			aux[i] = new Round(players, list, position, count);
+		aux[0] = new Round(players, position, count, k, c);
+		for (int i = 1; i < 10; i++) {
+			int k = Integer.parseInt((aux[i-1].getArcherys().get(0)+"").substring(2, 4));
+			int c = Integer.parseInt((aux[i-1].getArcherys().get(56)+"").substring(2, 4));
+			aux[i] = new Round(players, position, count, k, c);
 			count = position != aux[i].getLuckyPlayer()?1:count+1==3?0:count+1;
 			position = aux[i].getLuckyPlayer();
 			Player bestPlayer = players[aux[i].bestPlayer()];
@@ -58,10 +56,6 @@ public class ArcheryGame {
 			}
 		}
 	}
-
-	private ArrayList<Double> generateArcherys() {
-		return GenerateRi.getInstance().generateRi(k,c,10);
-	}
 	
 	/**
 	 * Metodo que retorna al equipo ganador de una ronda
@@ -78,7 +72,7 @@ public class ArcheryGame {
 	
 	/**
 	 * Metodo que calcula el puntaje del primer equipo
-	 * @param round numero de ronda (1-10)
+	 * @param round numero de ronda (0-9)
 	 * @return puntaje
 	 */
 	public int scoreFirstTeam(int round) {
@@ -87,7 +81,7 @@ public class ArcheryGame {
 	
 	/**
 	 * Metodo que calcula el puntaje del segundo equipo
-	 * @param round numero de ronda (1-10)
+	 * @param round numero de ronda (0-9)
 	 * @return puntaje
 	 */
 	public int scoreSecondTeam(int round) {
@@ -226,6 +220,15 @@ public class ArcheryGame {
 	 * @return tabla
 	 */
 	public ArrayList<Object[]> getTableForRound(int round){
-		return this.rounds[round].generateResultTable();
+		return this.rounds[round].getTable();
 	}
+	
+	public double getNextK() {
+		return this.rounds[9].getArcherys().get(20);
+	}
+	
+	public double getNextC() {
+		return this.rounds[9].getArcherys().get(40);
+	}
+	
 }

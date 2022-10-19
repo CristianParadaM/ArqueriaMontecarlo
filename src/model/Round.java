@@ -11,9 +11,9 @@ public class Round {
 	private int positionSuperLuckyShot;
 	private int count;
 	
-	public Round(Player[] players, ArrayList<Double> archerys, int position, int count) {
+	public Round(Player[] players, int position, int count, int k, int c) {
 		this.players = players;
-		this.archerys = archerys;
+		this.archerys = generateArcherys(k,c);
 		this.positionSuperLuckyShot = position;
 		this.count = count;
 		this.fortune = new double[this.players.length];
@@ -21,6 +21,17 @@ public class Round {
 		this.table = generateResultTable();
 	}
 	
+	/**
+	 * Metodo que genera los lanzamientos de esta ronda
+	 * @param k
+	 * @param c
+	 * @return lista con los lanzamientos
+	 */
+	private ArrayList<Double> generateArcherys(int k, int c) {
+		k = k > 62?k-61:k;
+		return GenerateRi.getInstance().generateRi(k%2==0?k:k+1, c%2!=0?c:c+1, 7);
+	}
+
 	/**
 	 * Metodo que genera la fortuna de los jugadores para esta ronda
 	 */
@@ -53,7 +64,7 @@ public class Round {
 	public ArrayList<Object[]> generateResultTable(){
 		ArrayList<Object[]> table = new ArrayList<Object[]>(calculateMaxShots());
 		int count = 0;
-		for (int i = 0; i < table.size(); i++) {
+		for (int i = 0; i < calculateMaxShots(); i++) {
 			Object[] aux = new Object[10];
 			for (int j = 0; j < aux.length; j++) {
 				if (calculateShots(j) > i) {
@@ -134,7 +145,7 @@ public class Round {
 		if (best.size() > 1) {
 			int aux = Integer.parseInt(archerys.get(archerys.size()-1).toString().charAt(3)+"");
 			int aux2 = Integer.parseInt(archerys.get(archerys.size()-2).toString().charAt(3)+"");
-			return bestPlayer(bestPlayers(), GenerateRi.getInstance().generateRi(aux, aux2, 7));
+			return bestPlayer(best, GenerateRi.getInstance().generateRi(aux%2==0?aux:aux+1, aux2%2!=0?aux2:aux2+1, 7));
 		}else {
 			return best.get(0);
 		}	
@@ -155,6 +166,10 @@ public class Round {
 				if (calculateScore(aux.get(i), best.get(i)) > calculateScore(aux.get(i+1), best.get(i+1))) {
 					aux.remove(i+1);
 					best.remove(i+1);
+				}else {
+					aux.remove(i);
+					best.remove(i);
+					i--;
 				}
 			}
 		}
@@ -235,6 +250,18 @@ public class Round {
 		return score;
 	}
 	
+	/**
+	 * Metodo que retorna los lanzamientos de los jugadores para esta ronda
+	 * @return lanzamientos
+	 */
+	public ArrayList<Double> getArcherys() {
+		return archerys;
+	}
+
+	public ArrayList<Object[]> getTable() {
+		return this.table;
+	}
+	
 //	public static void main(String[] args) {
 //		Player[] players = new Player[10];
 //		players[0] = new Player(Gender.MALE, 45);
@@ -247,12 +274,11 @@ public class Round {
 //		players[7] = new Player(Gender.FEMALE, 45);
 //		players[8] = new Player(Gender.MALE, 45);
 //		players[9] = new Player(Gender.FEMALE, 45);
-//		ArrayList<Double> archerys = GenerateRi.getInstance().generateRi(4, 3, 7);
-//		Round round = new Round(players, archerys, 0, 0);
-//		Object[][] table = round.generateResultTable();
-//		for (int i = 0; i < table.length; i++) {
-//			for (int j = 0; j < table[i].length; j++) {
-//				System.out.print(table[i][j]+"\t");
+//		Round round = new Round(players, 0, 0, 4, 3);
+//		ArrayList<Object[]> table = round.generateResultTable();
+//		for (int i = 0; i < table.size(); i++) {
+//			for (int j = 0; j < table.get(i).length; j++) {
+//				System.out.print(table.get(i)[j]+"\t");
 //			}
 //			System.out.println();
 //		}

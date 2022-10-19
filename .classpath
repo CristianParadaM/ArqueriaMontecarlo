@@ -8,5 +8,11 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/src/lib/generacion.jar"/>
 	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/src/lib/pruebas.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1-sources.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1-tests.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="E:/Usuarios/user/Escritorio/Programacion/Septimo semestre/ArqueriaMontecarlo/lib/commons-math3-3.6.1-tools.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
