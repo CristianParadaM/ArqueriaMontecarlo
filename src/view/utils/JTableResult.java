@@ -31,6 +31,7 @@ public class JTableResult extends JScrollPane {
 	private int style;
 	private TableModel dataModel;
 	private DefaultTableCellRenderer cellRender;
+	private int rowHeight;
 
 	/**
 	 * Constructor de JTableResult
@@ -40,6 +41,7 @@ public class JTableResult extends JScrollPane {
 		this.infoTable = info;
 		this.columnNames = columnNames;
 		this.style = style;
+		this.rowHeight = 42 * JFrameMain.HEIGHT_SCREEN / 1080;
 		init();
 	}
 
@@ -84,7 +86,7 @@ public class JTableResult extends JScrollPane {
 		}
 		
 		jTable.setShowGrid(false);
-		jTable.setRowHeight(42 * JFrameMain.HEIGHT_SCREEN / 1080);
+		jTable.setRowHeight(rowHeight);
 	}
 
 	private void createRenderCell() {
@@ -96,8 +98,22 @@ public class JTableResult extends JScrollPane {
 				setFont(new Font(Constants.FONT_APP, Font.PLAIN, 25 * JFrameMain.WIDTH_SCREEN / 1920));
 				setForeground(Color.BLACK);
 				setBackground(new Color(80, 78, 79));
+				if (value instanceof Integer) {
+					if ((int)value == -1) {
+						super.setValue("-");
+						return;
+					}
+				}
+				if (value instanceof String) {
+					if (value.equals("MALE")) {
+						super.setValue("Masculino");
+						return;
+					}else if(value.equals("FEMALE")){
+						super.setValue("Femenino");
+						return;
+					}
+				}
 				super.setValue(value);
-
 			}
 
 			@Override
@@ -154,6 +170,17 @@ public class JTableResult extends JScrollPane {
 				infoTable.get(row)[column] = aValue;
 			}
 		};
+	}
+	
+	@Override
+	public void setPreferredSize(Dimension preferredSize) {
+		int measure = 42 * JFrameMain.WIDTH_SCREEN / 1920;
+		int error = 6* JFrameMain.WIDTH_SCREEN / 1920;
+		if (measure * infoTable.size() < preferredSize.height) {
+			rowHeight = (measure * preferredSize.height)/ (measure * infoTable.size())-error;
+			setInfoTable(infoTable, columnNames);
+		}
+		super.setPreferredSize(preferredSize);
 	}
 	
 	public void setInfoTable(ArrayList<Object[]> infoTable, String[] columNames) {

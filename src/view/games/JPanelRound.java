@@ -53,6 +53,7 @@ public class JPanelRound extends JPanel {
 						"P8 - " + (((double[]) data[2])[7]), "P9 - " + (((double[]) data[2])[8]),
 						"P10 - " + (((double[]) data[2])[9]) };
 		this.jTableResult.setInfoTable((ArrayList<Object[]>) data[0], columnNames);
+		this.jTableResult.setPreferredSize(new Dimension(0, 500 * JFrameMain.HEIGHT_SCREEN / 1080));
 		this.jLabelTeam.setText("<html><b>Equipo " + (i + 1) + "</b><html>");
 		this.jLabelPointsRound.setText("<html><b>Puntos de la Ronda:</b> " + ((int) data[1]) + "</html>");
 		removeComponents();

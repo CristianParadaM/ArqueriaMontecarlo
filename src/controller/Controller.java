@@ -2,23 +2,28 @@ package controller;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+
+import model.Manager;
 import view.JFrameMain;
 
 public class Controller extends ThreadInfo implements MouseListener {
 
+	private static Controller controller = null;
+	private JFrameMain view;
+	private Manager model;
+	private Point point;
+	private static final int QUANTY_GAMES = 2000;
+	
 	private Controller(int sleepTime) {
 		super(sleepTime);
 	}
-
-	private static Controller controller = null;
-	private JFrameMain view;
 
 	public static Controller getInstance() {
 		if (controller == null) {
@@ -29,88 +34,110 @@ public class Controller extends ThreadInfo implements MouseListener {
 	
 	@Override
 	protected void executeTask() {
-		ArrayList<Object[]> aux = new ArrayList<Object[]>();
-		aux.add(new Object[] { 1, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 2, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 3, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 4, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 5, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 6, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 7, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 8, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 9, 10, 9, 8, 9, 10, 9 });
-		aux.add(new Object[] { 10, "-", 9, "-", 9, 10, 9 });
-		aux.add(new Object[] { 11, "-", "-", "-", "-", "-", "-" });
-		ArrayList<Object[]> aux2 = new ArrayList<Object[]>();
-		aux2.add(new Object[] { 0, 0, 0, 0, 0, 0, 0 });
-		aux2.add(new Object[] { 2, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 3, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 4, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 5, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 6, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 7, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 8, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 9, 10, 9, 8, 9, 10, 9 });
-		aux2.add(new Object[] { 10, "-", 9, "-", 9, 10, 9 });
-		aux2.add(new Object[] { 11, "-", "-", "-", "-", "-", "-" });
-		Object[] data = new Object[20001];
-		Random random = new Random();
+		Object[] data = new Object[QUANTY_GAMES+1];
 		double[] suerte = new double[10];
-		int globalB = 0;
-		int globalR = 0;
-		DecimalFormat format = new DecimalFormat("#.0");
-		int pointsRoundB = 0;
-		int pointsRoundR = 0;
+		int globalTeamOne = 0;
+		int globalTeamTwo = 0;
+		int pointsRoundOne = 0;
+		int pointsRoundTwo = 0;
 		int playerbest = 0;
 		ArrayList<Object[]> rounds = new ArrayList<Object[]>();
 		ArrayList<Object[]> results = new ArrayList<Object[]>();
 		ArrayList<Object[]> initial = new ArrayList<Object[]>();
+		JFrameMain.createProgress(0, data.length-2, "Generando Juegos", null);
+		this.model = new Manager(point.x, point.y);
+		JFrameMain.disposeDialog();
+		JFrameMain.createProgress(0, data.length-2, "Cargando Información", null);
+		int quantyWinTeamOne = 0;
+		int quantyWinTeamTwo = 0;
+		int pointsTotalTeamOne = 0;
+		int pointsTotalTeamTwo = 0;
 		test(results, initial);
-		JFrameMain.createProgress(0, data.length, "Generando Juegos", null);
 		for (int k = 0; k < data.length - 1; k++) { // cantidad de juegos
+			
 			JFrameMain.setProgressBar(k);
 			rounds = new ArrayList<>();
-			globalB = 0;
-			globalR = 0;
-
+			globalTeamOne = 0;
+			globalTeamTwo = 0;
+			
 			for (int i = 0; i < 10; i++) { // rondas
-
-				suerte = new double[10];
-
-				for (int j = 0; j < suerte.length; j++) {// suerte de los jugadores
-					suerte[j] = Double
-							.parseDouble(format.format(Math.random() + random.nextInt(3)).replace(",", "."));
-				}
-
-				pointsRoundB = random.nextInt(40);
-				pointsRoundR = random.nextInt(40);
-				playerbest = random.nextInt(10);
-
-				rounds.add(new Object[] { new Object[] { i % 2 == 0 ? aux : aux2, // tabla
-						pointsRoundB, // puntos ronda
+				
+				suerte = model.getLuck(k, i);
+				pointsRoundOne = model.getPointsRoundTeamFirst(k, i);
+				pointsRoundTwo = model.getPointsRoundTeamSecond(k, i);
+				playerbest = model.getBestPlayer(k, i);
+				
+				ArrayList<Object[]> tableTeamOne = cutTable(model.getTableRound(k, i), 0);
+				ArrayList<Object[]> tableTeamTwo = cutTable(model.getTableRound(k, i), 1);
+				
+				rounds.add(new Object[] { new Object[] { tableTeamOne , // tabla
+						pointsRoundOne, // puntos ronda
 						suerte // suerte
-						}, new Object[] { aux, // tabla
-								pointsRoundR, // puntos ronda
-								suerte // suerte
-						}, new Object[] { globalB += pointsRoundB, // puntos globales 1
-								globalR += pointsRoundR, // puntos globales 2
-								pointsRoundB > pointsRoundR ? 1 : 2, // equipo ganador ronda 1
-								playerbest // jugador ganador individual
-						} });
+				}, new Object[] { tableTeamTwo, // tabla
+						pointsRoundTwo, // puntos ronda
+						suerte // suerte
+				}, new Object[] { globalTeamOne += pointsRoundOne, // puntos globales 1
+				globalTeamTwo += pointsRoundTwo, // puntos globales 2
+				pointsRoundOne == pointsRoundTwo ? 0 : pointsRoundOne > pointsRoundTwo ? 1 : 2, // equipo ganador ronda 1
+						playerbest // jugador ganador individual
+				} });
 			}
-			data[k] = new Object[] { rounds, globalB > globalR ? 1 : 2,
-					globalB > globalR ? globalB : globalR };
+			
+			quantyWinTeamOne = globalTeamOne > globalTeamTwo ? quantyWinTeamOne+1:quantyWinTeamOne;
+			quantyWinTeamTwo = globalTeamTwo > globalTeamOne ? quantyWinTeamTwo+1:quantyWinTeamTwo;
+			pointsTotalTeamOne += globalTeamOne;
+			pointsRoundTwo += globalTeamTwo;
+			
+			data[k] = new Object[] { rounds, globalTeamOne > globalTeamTwo ? 1 : 2,
+					globalTeamOne > globalTeamTwo ? globalTeamOne : globalTeamTwo };
 		}
-		data[data.length - 1] = new Object[] { 1, // equipo ganador de las 20000 rondas
-				1203, // puntos del equipo ganador despues de las 20000 rondas
-				new double[] { 13, 21, 31, 43, 54, 65, 71, 83, 79, 100 }, // puntos de los jugadores en las 20000
-																			// rondas
-				results, // tabla de resultados de las 20000 rondas
-				initial // propiedades iniciales de los jugadores.. genero, resistencia inicial etc
+		data[data.length - 1] = new Object[] { quantyWinTeamOne > quantyWinTeamTwo ? 1 : 2, // equipo ganador de las 20000 rondas
+				pointsTotalTeamOne > pointsTotalTeamTwo ? pointsTotalTeamOne: pointsTotalTeamTwo, // puntos del equipo ganador despues de las 20000 rondas
+				calculatePointsPLayers(), // puntos de los jugadores en las 20000 rondas
+				model.getResults()	, // tabla de resultados de las 20000 rondas
+				model.getInitialStatics() // propiedades iniciales de los jugadores.. genero, resistencia inicial etc
 		};
 		JFrameMain.disposeDialog();
 		view.changeTo(1, data);
 		this.pause();
+	}
+
+	private double[] calculatePointsPLayers() {
+		double[] aux = new double[10];
+		for (int i = 0; i < aux.length; i++) {
+			aux[i] = model.getTotalPointsOfPlayer(i);
+		}
+		return aux;
+	}
+
+	private ArrayList<Object[]> cutTable(ArrayList<Object[]> tableRound, int index) {
+		ArrayList<Object[]> aux = new ArrayList<Object[]>();
+		Object[] aux2 = new Object[6];
+		if (index == 0) {
+			for (int i = 0; i < tableRound.size(); i++) {
+				aux2 = new Object[6];
+				aux2[0] = i+1;
+				for (int j = 0; j < 5; j++) {
+					aux2[j+1] = tableRound.get(i)[j];
+				}
+				aux.add(aux2);
+			}
+		}else {
+			for (int i = 0; i < tableRound.size(); i++) {
+				aux2 = new Object[6];
+				aux2[0] = i+1;
+				for (int k = 1, j = tableRound.get(i).length/2; j < tableRound.get(i).length; j++, k++) {
+					aux2[k] = tableRound.get(i)[j];
+				}
+				aux.add(aux2);
+			}
+		}
+		
+		return aux;
+	}
+
+	public void setProgress(int k) {
+		JFrameMain.setProgressBar(k);
 	}
 
 	public void startApp() {
@@ -123,6 +150,7 @@ public class Controller extends ThreadInfo implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (this.isPaused()) {
+			point = e.getPoint();
 			this.resume();
 		}
 	}
@@ -160,7 +188,7 @@ public class Controller extends ThreadInfo implements MouseListener {
 			((JButton) e.getComponent()).setBorderPainted(false);
 		}
 	}
-
+	
 	public static void main(String[] args) {
 		Controller.getInstance().startApp();
 	}

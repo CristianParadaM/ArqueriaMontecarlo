@@ -132,7 +132,7 @@ public class JPanelGame extends JPanel {
 				}
 			});
 			button.addActionListener(new ActionListener() {
-
+				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if ((indexPage+1) < gameData.size()) {
